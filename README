@@ -33,3 +33,11 @@ Method 3
 1. Set up a function pointer to a function in the loader program, in the library. By the shared function pointer, the library can call a function in the loader program.
 
 2. Whenever library A wants to call a function in library B, it calls the shared function in the loader program. The shared function makes a new mmap and copies the data of the libraries onto that mapping. Then it returns the pointer to the function requested to the library (by calculating offset in the original mapping and adding it to the base address of the new mapping).
+
+
+Usage
+
+1. Run "make" to compile the components.
+2. Run "./main libmy.so libmy2.so" or "./foo libmy.so libmy2.so" according to the executable.
+3. Run "make test" to run the code 100 times, make a log file of the timings and calculate the average time taken for the function call.
+4. Run "make clean" to clean up.
