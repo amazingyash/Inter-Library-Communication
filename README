@@ -1,0 +1,35 @@
+I have implemented three ways for a library to call a function in another library while both are loaded in the same loader program and have their different address spaces.
+
+In all the methods the location of memory mappings of the libraries are read by parsing /proc/PID/maps.
+
+Method 1
+
+1. Set up a function pointer to a function in the loader program, in the library. By the shared function pointer, the library can call a function in the loader program.
+
+2. Whenever a library A wants to call a function in library B, it calls the shared function and passes the function name.
+
+3. The loader program in the shared function copies the library code and data from its original mapping and makes a new copy. And sends the pointer to the function in the new mapping (by calculating the offset of the function in the old mapping and adding it in the base address of the new mapping to get the new location).
+
+4. Then library A casts the pointer to appropriate type and calls the function using its own arguments.
+
+Method 2
+
+1. Set up a function pointer to a function in the loader program, in the library. By the shared function pointer, the library can call a function in the loader program.
+
+2. The loader program also makes a shared memory for each library and then mmaps it onto its address space.
+
+3. Then it copies the library contents onto the mappings and calls msync for the mapping to write back onto the shared memory.
+
+4. Whenever library A wants to call a function in library B, it opens the appropriate shared memory and mmaps it onto its own address space.
+
+5. It then calls the shared function in the loader program with the function name, and it returns the offset of the function to the library.
+
+6. The library then adds the offset to the base address of the mapping and gets the pointer to the function.
+
+7. Then library A casts the pointer to appropriate type and calls the function using its own arguments.
+
+Method 3
+
+1. Set up a function pointer to a function in the loader program, in the library. By the shared function pointer, the library can call a function in the loader program.
+
+2. Whenever library A wants to call a function in library B, it calls the shared function in the loader program. The shared function makes a new mmap and copies the data of the libraries onto that mapping. Then it returns the pointer to the function requested to the library (by calculating offset in the original mapping and adding it to the base address of the new mapping).
